@@ -5,7 +5,6 @@ using Newtonsoft.Json;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace EdgeTicketSubmissionService.Controllers
 {
@@ -39,8 +38,13 @@ namespace EdgeTicketSubmissionService.Controllers
             // as long as we got a json document, send
             // upstream through IoT Hub
             
+            // TODO: should do JSON validation against expected schema
+
             // TODO:  Do we need to added a time stamp for when the ticket
             // was submitted to this local ticket submission service?
+
+            // TODO: should add authentication to this api so that only intended
+            // clients can post to this API. 
 
             string strPayload = System.Text.Json.JsonSerializer.Serialize(value);
             var bytes = System.Text.Encoding.UTF8.GetBytes(strPayload);
