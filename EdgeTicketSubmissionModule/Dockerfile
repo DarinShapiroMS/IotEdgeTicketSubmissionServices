@@ -6,16 +6,16 @@ EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
-COPY ["CoreWebAPI/CoreWebAPI.csproj", "CoreWebAPI/"]
-RUN dotnet restore "CoreWebAPI/CoreWebAPI.csproj"
+COPY ["EdgeTicketSubmissionModule/EdgeTicketSubmissionModule.csproj", "EdgeTicketSubmissionModule/"]
+RUN dotnet restore "EdgeTicketSubmissionModule/EdgeTicketSubmissionModule.csproj"
 COPY . .
-WORKDIR "/src/CoreWebAPI"
-RUN dotnet build "CoreWebAPI.csproj" -c Release -o /app/build
+WORKDIR "/src/EdgeTicketSubmissionModule"
+RUN dotnet build "EdgeTicketSubmissionModule.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "CoreWebAPI.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "EdgeTicketSubmissionModule.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "CoreWebAPI.dll"]
+ENTRYPOINT ["dotnet", "EdgeTicketSubmissionModule.dll"]

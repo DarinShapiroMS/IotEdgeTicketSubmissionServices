@@ -48,10 +48,16 @@ namespace EdgeTicketSubmissionService.Controllers
 
             string strPayload = System.Text.Json.JsonSerializer.Serialize(value);
             var bytes = System.Text.Encoding.UTF8.GetBytes(strPayload);
-            var message = new Message(bytes);
-
-            message.ContentEncoding = "utf-8";
-            message.ContentType = "application/json";
+            var message = new Message(bytes)
+            {
+                ContentEncoding = "utf-8",
+                ContentType = "application/json",
+                CreationTimeUtc = DateTime.UtcNow   ,
+                Properties =
+                {
+                    { "SubmissionTime", DateTime.UtcNow.ToString("O") }                    
+                }
+            };
 
             await Program.IoTHubModuleClient.SendEventAsync("output1", message);            
         }
