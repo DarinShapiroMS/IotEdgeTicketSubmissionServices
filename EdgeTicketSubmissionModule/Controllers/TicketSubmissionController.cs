@@ -39,10 +39,7 @@ namespace EdgeTicketSubmissionService.Controllers
             // upstream through IoT Hub
             
             // TODO: should do JSON validation against expected schema
-
-            // TODO:  Do we need to added a time stamp for when the ticket
-            // was submitted to this local ticket submission service?
-
+            
             // TODO: should add authentication to this api so that only intended
             // clients can post to this API. 
 
@@ -51,13 +48,14 @@ namespace EdgeTicketSubmissionService.Controllers
             var message = new Message(bytes)
             {
                 ContentEncoding = "utf-8",
-                ContentType = "application/json",
-                CreationTimeUtc = DateTime.UtcNow   ,
+                ContentType = "application/json" ,                
                 Properties =
                 {
                     { "SubmissionTime", DateTime.UtcNow.ToString("O") }                    
                 }
             };
+
+            // added a custom property SubmissionTime above because CreationTimeUtc formats stangely
 
             await Program.IoTHubModuleClient.SendEventAsync("output1", message);            
         }

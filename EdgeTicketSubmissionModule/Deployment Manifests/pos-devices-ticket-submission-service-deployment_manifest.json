@@ -1,0 +1,87 @@
+{
+    "modulesContent": {
+        "$edgeAgent": {
+            "properties.desired": {
+                "schemaVersion": "1.1",
+                "runtime": {
+                    "type": "docker",
+                    "settings": {
+                        "registryCredentials": {
+                            "avasampleregistryebkkuonvyhsna": {
+                                "address": "avasampleregistryebkkuonvyhsna.azurecr.io",
+                                "password": "Dfu98kfg91q9l91Ft7SLQvS8zTeuk6f/",
+                                "username": "avasampleregistryebkkuonvyhsna"
+                            }
+                        }
+                    }
+                },
+                "systemModules": {
+                    "edgeAgent": {
+                        "settings": {
+                            "image": "mcr.microsoft.com/azureiotedge-agent:1.4"
+                        },
+                        "type": "docker"
+                    },
+                    "edgeHub": {
+                        "restartPolicy": "always",
+                        "settings": {
+                            "image": "mcr.microsoft.com/azureiotedge-hub:1.4",
+                            "createOptions": "{\"HostConfig\":{\"PortBindings\":{\"443/tcp\":[{\"HostPort\":\"443\"}],\"5671/tcp\":[{\"HostPort\":\"5671\"}],\"8883/tcp\":[{\"HostPort\":\"8883\"}]}}}"
+                        },
+                        "status": "running",
+                        "type": "docker"
+                    }
+                },
+                "modules": {
+                    "IoTEdgeMetricsCollector": {
+                        "env": {
+                            "ResourceId": {
+                                "value": "/subscriptions/3af88148-8e0f-4788-804d-a2367b181169/resourceGroups/Soriana/providers/Microsoft.Devices/IotHubs/ava-iot-hub"
+                            },
+                            "UploadTarget": {
+                                "value": "AzureMonitor"
+                            },
+                            "LogAnalyticsWorkspaceId": {
+                                "value": "862bcc75-8fb4-484a-baa7-8f88e7b1cf6d"
+                            },
+                            "LogAnalyticsSharedKey": {
+                                "value": "2UqZWVIV/9RlLf1ovos0P+CMIJ1zYMP//TfuvzoJy0FbJPuK6MP1qSFB3CAZfp7nYQrDMI4zIBbL4mQlnLyi4A=="
+                            }
+                        },
+                        "restartPolicy": "always",
+                        "settings": {
+                            "image": "mcr.microsoft.com/azureiotedge-metrics-collector:1.1"
+                        },
+                        "status": "running",
+                        "type": "docker"
+                    },
+                    "TicketSubmissionService": {
+                        "restartPolicy": "always",
+                      "settings": {
+                        "image": "avasampleregistryebkkuonvyhsna.azurecr.io/edgeticketsubmissionmodule:20230127222402",
+                        "createOptions": "{\"HostConfig\":{\"PortBindings\":{\"80/tcp\":[{\"HostPort\":\"80\"}]}}}"
+                      },
+                        "status": "running",
+                        "type": "docker"
+                    }
+                }
+            }
+        },
+        "$edgeHub": {
+            "properties.desired": {
+                "schemaVersion": "1.1",
+                "storeAndForwardConfiguration": {
+                    "timeToLiveSecs": 7200
+                },
+                "routes": {
+                    "FromMetricsCollectorToUpstream": {
+                        "route": "FROM /messages/modules/IoTEdgeMetricsCollector/* INTO $upstream"
+                    },
+                    "All": {
+                        "route": "FROM /messages/* INTO $upstream"
+                    }
+                }
+            }
+        }
+    }
+}

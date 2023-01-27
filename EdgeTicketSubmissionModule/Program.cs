@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.SignalR.Protocol;
 using Microsoft.Azure.Devices.Client;
+using Microsoft.Azure.Devices.Common;
 using Microsoft.Azure.Devices.Client.Transport.Mqtt;
 using System.Diagnostics.Metrics;
 using System.Runtime.Loader;
 using System.Text;
+using System.Security.Cryptography.Xml;
 
 namespace EdgeTicketSubmissionService
 
@@ -70,8 +72,20 @@ namespace EdgeTicketSubmissionService
             await IoTHubModuleClient.OpenAsync();
             Console.WriteLine("IoT Hub module client initialized.");
 
+            // Register a callback to enable direct methods being called from the cloud
+            await ioTHubModuleClient.SetMethodHandlerAsync("DirectMethod1", DirectMethod1, ioTHubModuleClient);
+
+
             // Register callback to be called when a message is received by the module
             await IoTHubModuleClient.SetInputMessageHandlerAsync("input1", PipeMessage, IoTHubModuleClient);
+        }
+
+        private static Task<MethodResponse> DirectMethod1(MethodRequest methodRequest, object userContext)
+        {
+
+            var methodResponse = new MethodResponse(Encoding.UTF8.GetBytes("{\"status\": \"ok\"}"), 200);
+            return Task.FromResult(methodResponse);
+
         }
 
         /// <summary>
@@ -111,6 +125,8 @@ namespace EdgeTicketSubmissionService
             }
             return MessageResponse.Completed;
         }
+
+      
     }
 
 
