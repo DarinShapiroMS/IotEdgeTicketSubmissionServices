@@ -72,7 +72,7 @@ namespace EdgeTicketSubmissionService
             await IoTHubModuleClient.OpenAsync();
             Console.WriteLine("IoT Hub module client initialized.");
 
-            // Register a callback to enable direct methods being called from the cloud
+            // Register callback to enable direct methods being called from the cloud
             await ioTHubModuleClient.SetMethodHandlerAsync("DirectMethod1", DirectMethod1, ioTHubModuleClient);
 
 
