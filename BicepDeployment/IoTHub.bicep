@@ -1,5 +1,9 @@
-﻿resource symbolicname 'Microsoft.Devices/IotHubs@2022-04-30-preview' = {
-  name: 'sorianatesthub'
+﻿param iotHubName string = 'iottest'
+
+
+
+resource symbolicname 'Microsoft.Devices/IotHubs@2022-04-30-preview' = {
+  name: iotHubName
   location: resourceGroup().location
  
   sku: {
