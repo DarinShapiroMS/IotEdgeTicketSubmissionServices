@@ -43,6 +43,6 @@ az deployment group create --resource-group <resource-group-name> --template-fil
 
 ## Build custom modules and push to a container registry
 
-1. Once [The EdgeTicketSubmissionModule](../EdgeTicketSubmissionModule/) is build and pushed to a container registry, follow these instructions on [How to deploy IoT Edge Modules](https://learn.microsoft.com/en-us/azure/iot-edge/how-to-deploy-modules-portal?view=iotedge-1.4).
+1. Once [The EdgeTicketSubmissionModule](./EdgeTicketSubmissionModule/) is build and pushed to a container registry, follow these instructions on [How to deploy IoT Edge Modules](https://learn.microsoft.com/en-us/azure/iot-edge/how-to-deploy-modules-portal?view=iotedge-1.4).
 
 
