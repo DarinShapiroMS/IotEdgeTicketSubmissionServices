@@ -6,7 +6,7 @@ This sample project contains the Azure and Edge components necessary to host a W
 
 Clone this repo and follow the steps below to get the solution running in your own Azure subscription.
 
-## Install Azure Infrastructure
+## Deploy Azure Infrastructure
 
 Using a bicep file and the Azure CLI, you can deploy the Azure services as visualized below.  This includes...
 1. [Azure IoT Hub](https://azure.microsoft.com/en-us/products/iot-hub/)
@@ -16,8 +16,11 @@ Using a bicep file and the Azure CLI, you can deploy the Azure services as visua
 
 ![Azure Infra Overview](./Docs/azure-architecture.png)
 
-
-
+The Edge components that run outside of Azure include..
+1. A Windows Server or Client.
+2. [EFLOW](https://learn.microsoft.com/en-us/azure/iot-edge/iot-edge-for-linux-on-windows?view=iotedge-1.4) (Azure IoT Edge for Linux on Windows).
+3. Custom C# modules to host a local web API and collect metrics for observability.
+### Deploy Azure Infrasructure
 After cloning this repo locally, navigate to the [BicepDeployment Directory](..BicepDeployment/) and execute the following commands.  
 ```C#	
 // You must first authenticate with Azure.
@@ -35,3 +38,11 @@ az deployment group create --resource-group <resource-group-name> --template-fil
 ```
 
 ## Install  Edge Components
+
+1. [Install and configure EFLOW VM on Windows device](https://learn.microsoft.com/en-us/azure/iot-edge/how-to-provision-single-device-linux-on-windows-symmetric?view=iotedge-1.4&tabs=azure-portal)
+
+## Build custom modules and push to a container registry
+
+1. Once [The EdgeTicketSubmissionModule](../EdgeTicketSubmissionModule/) is build and pushed to a container registry, follow these instructions on [How to deploy IoT Edge Modules](https://learn.microsoft.com/en-us/azure/iot-edge/how-to-deploy-modules-portal?view=iotedge-1.4).
+
+
