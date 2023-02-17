@@ -5,17 +5,6 @@ VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EdgeTicketSubmissionModule", "EdgeTicketSubmissionModule\EdgeTicketSubmissionModule.csproj", "{223052F0-E928-420F-9073-13D643939FD9}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{AFC5B604-8D54-4352-946E-4FBA3DB89889}"
-	ProjectSection(SolutionItems) = preProject
-		BicepDeployment\IoTHub.bicep = BicepDeployment\IoTHub.bicep
-		BicepDeployment\cosmos.bicep = BicepDeployment\cosmos.bicep
-		BicepDeployment\IoTHub2.bicep = BicepDeployment\IoTHub2.bicep
-		BicepDeployment\LogAnalytics.bicep = BicepDeployment\LogAnalytics.bicep
-		BicepDeployment\main.bicep = BicepDeployment\main.bicep
-		BicepDeployment\rbac.bicep = BicepDeployment\rbac.bicep
-		BicepDeployment\storage.bicep = BicepDeployment\storage.bicep
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
