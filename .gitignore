@@ -362,3 +362,4 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /EdgeTicketSubmissionModule/Deployment Manifests/pos-devices-ticket-submission-service-deployment_manifest.json
+/Mainfest/DeployModules.json
