@@ -5,7 +5,7 @@ param location string = resourceGroup().location
 param accountName string = toLower('iotdata-${uniqueString(resourceGroup().id)}')
 
 @description('The name for the database')
-param databaseName string = 'IoTTelemetryDb'
+param databaseName string 
 
 param collectionName string = 'tickets'
 
@@ -22,7 +22,7 @@ param dataActions array = [
 ]
 
 @description('Object ID of the AAD identity. Must be a GUID.')
-param principalId string  = '3f050c81-81b5-4441-8160-9979c31602e6'
+param principalId string = ''
 
 var locations = [
   {
@@ -115,3 +115,5 @@ resource sqlRoleAssignment 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignm
     scope: databaseAccount.id
   }
 }
+
+output assignment string = sqlRoleAssignment.id

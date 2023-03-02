@@ -1,8 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR.Protocol;
 using Microsoft.Azure.Devices.Client;
-using Newtonsoft.Json;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 
 
@@ -55,7 +52,7 @@ namespace EdgeTicketSubmissionService.Controllers
                 }
             };
 
-            // added a custom property SubmissionTime above because CreationTimeUtc formats stangely
+            // added a custom property SubmissionTime above because CreationTimeUtc formats strangely
 
             await Program.IoTHubModuleClient.SendEventAsync("output1", message);            
         }

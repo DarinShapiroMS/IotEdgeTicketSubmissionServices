@@ -2,7 +2,7 @@
 
 ## Overview
 
-This sample project contains the Azure and Edge components necessary to host a Web API on the edge that accepts valid JSON and forwards it to IoT Hub in Azure. IoT Hub in turns sends the data to Cosmos Database. The components that run on the edge are hosted on a Windows device configured with EFLOW to host the IoT Edge runtime and custom modules to host a web api for json submission, and a module for sending additional metrics to Log Anatlycs for observability. 
+This sample project contains the Azure and Edge components necessary to host a Web API on the edge that accepts valid JSON and forwards it to IoT Hub in Azure. IoT Hub in turns sends the data to Cosmos Database. The components that run on the edge are hosted on a Windows device configured with EFLOW to host the IoT Edge runtime, and custom modules to host a web api for json submission, and a module for sending additional metrics to Log Anatlycs for observability. 
 
 Clone this repo and follow the steps below to get the solution running in your own Azure subscription.
 
@@ -20,7 +20,7 @@ The Edge components that run outside of Azure include..
 1. A Windows Server or Client.
 2. [EFLOW](https://learn.microsoft.com/en-us/azure/iot-edge/iot-edge-for-linux-on-windows?view=iotedge-1.4) (Azure IoT Edge for Linux on Windows).
 3. Custom C# modules to host a local web API and collect metrics for observability.
-### Deploy Azure Infrasructure
+### To Deploy Azure Infrasructure
 After cloning this repo locally, navigate to the [BicepDeployment Directory](..BicepDeployment/) and execute the following commands.  
 ```C#	
 // You must first authenticate with Azure.
@@ -46,3 +46,4 @@ az deployment group create --resource-group <resource-group-name> --template-fil
 1. Once [The EdgeTicketSubmissionModule](./EdgeTicketSubmissionModule/) is build and pushed to a container registry, follow these instructions on [How to deploy IoT Edge Modules](https://learn.microsoft.com/en-us/azure/iot-edge/how-to-deploy-modules-portal?view=iotedge-1.4).
 
 
+## Test Web API hosted on IoT Edge device

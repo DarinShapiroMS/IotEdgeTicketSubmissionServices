@@ -2,6 +2,7 @@
 param cosmosAccountName     string
 param cosmosDbName          string
 param cosmosCollectionName  string
+param roleAssignmentOutput  string
 
 resource symbolicname 'Microsoft.Devices/IotHubs@2022-04-30-preview' = {
   name: iotHubName
@@ -37,4 +38,4 @@ resource symbolicname 'Microsoft.Devices/IotHubs@2022-04-30-preview' = {
      }
 }
 }
-output iotHubIdentity string = symbolicname.identity.principalId
+//output iotHubIdentity string = symbolicname.identity.principalId

@@ -38,6 +38,7 @@ module storageModule 'storage.bicep' = {
 	params: {
 		projectName: projectName
 	}
+	
 }
 
 // Deploy the Cosmos database that will be the destination
@@ -48,7 +49,9 @@ module cosmosModule 'cosmos.bicep' = {
 	params:{		
 		principalId: iotHub.outputs.iotHubIdentity
 		accountName: cosmosAccountName
+		databaseName: cosmosDbName
 	}
+	dependsOn:[iotHub]
 }
 
 // Another IoTHub deployment to add custom endpoint
@@ -57,11 +60,13 @@ module cosmosModule 'cosmos.bicep' = {
 module iothub2 'IoTHub2.bicep' = {
 	name: 'iothubDeploymentUpdate'
 	params:{
+		roleAssignmentOutput: cosmosModule.outputs.assignment
 		iotHubName:iotHubName
 		cosmosAccountName: cosmosAccountName
 		cosmosDbName: cosmosDbName
 		cosmosCollectionName: cosmosCollectionName
 	}
+	dependsOn:[cosmosModule]
 }
 
 // Deploy a Log Analytics workspace that is used by the

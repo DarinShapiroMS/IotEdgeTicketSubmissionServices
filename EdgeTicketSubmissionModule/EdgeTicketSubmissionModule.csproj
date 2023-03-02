@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <BaseIntermediateOutputPath>C:\Source\CoreWebAPI\EdgeTicketSubmissionModule\obj\</BaseIntermediateOutputPath>
+    <UserSecretsId>54036a20-eb83-4731-975b-d508abb3d75f</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

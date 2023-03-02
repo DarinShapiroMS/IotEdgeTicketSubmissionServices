@@ -1,0 +1,500 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.14.85.62628",
+      "templateHash": "16437072252172438194"
+    }
+  },
+  "parameters": {
+    "projectName": {
+      "type": "string",
+      "maxLength": 11,
+      "minLength": 1,
+      "metadata": {
+        "description": "Define the project name or prefix for all objects."
+      }
+    }
+  },
+  "variables": {
+    "iotHubName": "[format('{0}Hub{1}', parameters('projectName'), uniqueString(resourceGroup().id))]",
+    "cosmosAccountName": "[format('{0}{1}', parameters('projectName'), uniqueString(resourceGroup().id))]",
+    "cosmosDbName": "IoTHubData",
+    "cosmosCollectionName": "tickets",
+    "laWorkspaceName": "[format('{0}LA{1}', parameters('projectName'), uniqueString(resourceGroup().id))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "iothubDeployment",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "iotHubName": {
+            "value": "[variables('iotHubName')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.14.85.62628",
+              "templateHash": "1430972698706535565"
+            }
+          },
+          "parameters": {
+            "iotHubName": {
+              "type": "string",
+              "defaultValue": "iottest"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Devices/IotHubs",
+              "apiVersion": "2022-04-30-preview",
+              "name": "[parameters('iotHubName')]",
+              "location": "[resourceGroup().location]",
+              "sku": {
+                "capacity": 1,
+                "name": "S1"
+              },
+              "identity": {
+                "type": "SystemAssigned"
+              },
+              "properties": {
+                "features": "DeviceManagement"
+              }
+            }
+          ],
+          "outputs": {
+            "iotHubIdentity": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Devices/IotHubs', parameters('iotHubName')), '2022-04-30-preview', 'full').identity.principalId]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "storageAccountDeployment",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "projectName": {
+            "value": "[parameters('projectName')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.14.85.62628",
+              "templateHash": "14707211715423023288"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "Provide an Azure Region for the Storage Account to be created in."
+              }
+            },
+            "projectName": {
+              "type": "string"
+            }
+          },
+          "variables": {
+            "storageAccountName": "[format('{0}{1}', toLower(parameters('projectName')), uniqueString(resourceGroup().id))]"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Storage/storageAccounts",
+              "apiVersion": "2022-09-01",
+              "name": "[toLower(variables('storageAccountName'))]",
+              "location": "[parameters('location')]",
+              "sku": {
+                "name": "Standard_LRS"
+              },
+              "kind": "StorageV2"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "cosmosAccountDeployment",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "principalId": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'iothubDeployment'), '2020-10-01').outputs.iotHubIdentity.value]"
+          },
+          "accountName": {
+            "value": "[variables('cosmosAccountName')]"
+          },
+          "databaseName": {
+            "value": "[variables('cosmosDbName')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.14.85.62628",
+              "templateHash": "1182575316368462846"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "Location for all resources."
+              }
+            },
+            "accountName": {
+              "type": "string",
+              "defaultValue": "[toLower(format('iotdata-{0}', uniqueString(resourceGroup().id)))]",
+              "metadata": {
+                "description": "Cosmos DB account name, max length 44 characters"
+              }
+            },
+            "databaseName": {
+              "type": "string",
+              "metadata": {
+                "description": "The name for the database"
+              }
+            },
+            "collectionName": {
+              "type": "string",
+              "defaultValue": "tickets"
+            },
+            "roleDefinitionName": {
+              "type": "string",
+              "defaultValue": "My Read Write Role",
+              "metadata": {
+                "description": "Friendly name for the SQL Role Definition"
+              }
+            },
+            "dataActions": {
+              "type": "array",
+              "defaultValue": [
+                "Microsoft.DocumentDB/databaseAccounts/readMetadata",
+                "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/*",
+                "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/items/*"
+              ],
+              "metadata": {
+                "description": "Data actions permitted by the Role Definition"
+              }
+            },
+            "principalId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Object ID of the AAD identity. Must be a GUID."
+              }
+            }
+          },
+          "variables": {
+            "locations": [
+              {
+                "locationName": "[parameters('location')]",
+                "failoverPriority": 0,
+                "isZoneRedundant": false
+              }
+            ],
+            "roleDefinitionId": "[guid('sql-role-definition-', parameters('principalId'), resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('accountName')))]",
+            "roleAssignmentId": "[guid(variables('roleDefinitionId'), parameters('principalId'), resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('accountName')))]"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.DocumentDB/databaseAccounts",
+              "apiVersion": "2021-04-15",
+              "name": "[parameters('accountName')]",
+              "kind": "GlobalDocumentDB",
+              "location": "[parameters('location')]",
+              "properties": {
+                "consistencyPolicy": {
+                  "defaultConsistencyLevel": "Session"
+                },
+                "locations": "[variables('locations')]",
+                "databaseAccountOfferType": "Standard",
+                "enableAutomaticFailover": false,
+                "enableMultipleWriteLocations": false
+              }
+            },
+            {
+              "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases",
+              "apiVersion": "2022-05-15",
+              "name": "[format('{0}/{1}', parameters('accountName'), parameters('databaseName'))]",
+              "properties": {
+                "resource": {
+                  "id": "[parameters('databaseName')]"
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('accountName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+              "apiVersion": "2022-05-15",
+              "name": "[format('{0}/{1}', format('{0}/{1}', parameters('accountName'), parameters('databaseName')), parameters('collectionName'))]",
+              "properties": {
+                "resource": {
+                  "id": "[parameters('collectionName')]",
+                  "partitionKey": {
+                    "paths": [
+                      "/myPartitionKey"
+                    ],
+                    "kind": "Hash"
+                  }
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', split(format('{0}/{1}', parameters('accountName'), parameters('databaseName')), '/')[0], split(format('{0}/{1}', parameters('accountName'), parameters('databaseName')), '/')[1])]"
+              ]
+            },
+            {
+              "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+              "apiVersion": "2022-05-15",
+              "name": "[format('{0}/ConnectionEvents', format('{0}/{1}', parameters('accountName'), parameters('databaseName')))]",
+              "properties": {
+                "resource": {
+                  "id": "ConnectionEvents",
+                  "partitionKey": {
+                    "paths": [
+                      "/myPartitionKey"
+                    ],
+                    "kind": "Hash"
+                  }
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', split(format('{0}/{1}', parameters('accountName'), parameters('databaseName')), '/')[0], split(format('{0}/{1}', parameters('accountName'), parameters('databaseName')), '/')[1])]"
+              ]
+            },
+            {
+              "type": "Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions",
+              "apiVersion": "2021-04-15",
+              "name": "[format('{0}/{1}', parameters('accountName'), variables('roleDefinitionId'))]",
+              "properties": {
+                "roleName": "[parameters('roleDefinitionName')]",
+                "type": "CustomRole",
+                "assignableScopes": [
+                  "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('accountName'))]"
+                ],
+                "permissions": [
+                  {
+                    "dataActions": "[parameters('dataActions')]"
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('accountName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments",
+              "apiVersion": "2021-04-15",
+              "name": "[format('{0}/{1}', parameters('accountName'), variables('roleAssignmentId'))]",
+              "properties": {
+                "roleDefinitionId": "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', split(format('{0}/{1}', parameters('accountName'), variables('roleDefinitionId')), '/')[0], split(format('{0}/{1}', parameters('accountName'), variables('roleDefinitionId')), '/')[1])]",
+                "principalId": "[parameters('principalId')]",
+                "scope": "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('accountName'))]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('accountName'))]",
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', split(format('{0}/{1}', parameters('accountName'), variables('roleDefinitionId')), '/')[0], split(format('{0}/{1}', parameters('accountName'), variables('roleDefinitionId')), '/')[1])]"
+              ]
+            }
+          ],
+          "outputs": {
+            "assignment": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments', split(format('{0}/{1}', parameters('accountName'), variables('roleAssignmentId')), '/')[0], split(format('{0}/{1}', parameters('accountName'), variables('roleAssignmentId')), '/')[1])]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', 'iothubDeployment')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "iothubDeploymentUpdate",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "roleAssignmentOutput": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'cosmosAccountDeployment'), '2020-10-01').outputs.assignment.value]"
+          },
+          "iotHubName": {
+            "value": "[variables('iotHubName')]"
+          },
+          "cosmosAccountName": {
+            "value": "[variables('cosmosAccountName')]"
+          },
+          "cosmosDbName": {
+            "value": "[variables('cosmosDbName')]"
+          },
+          "cosmosCollectionName": {
+            "value": "[variables('cosmosCollectionName')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.14.85.62628",
+              "templateHash": "6027322230431030532"
+            }
+          },
+          "parameters": {
+            "iotHubName": {
+              "type": "string"
+            },
+            "cosmosAccountName": {
+              "type": "string"
+            },
+            "cosmosDbName": {
+              "type": "string"
+            },
+            "cosmosCollectionName": {
+              "type": "string"
+            },
+            "roleAssignmentOutput": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Devices/IotHubs",
+              "apiVersion": "2022-04-30-preview",
+              "name": "[parameters('iotHubName')]",
+              "location": "[resourceGroup().location]",
+              "sku": {
+                "capacity": 1,
+                "name": "S1"
+              },
+              "properties": {
+                "routing": {
+                  "endpoints": {
+                    "cosmosDBSqlCollections": [
+                      {
+                        "authenticationType": "identityBased",
+                        "collectionName": "[parameters('cosmosCollectionName')]",
+                        "databaseName": "[parameters('cosmosDbName')]",
+                        "endpointUri": "[format('https://{0}.documents.azure.com:443/', parameters('cosmosAccountName'))]",
+                        "name": "cosmosticketendpoint"
+                      }
+                    ]
+                  },
+                  "routes": [
+                    {
+                      "endpointNames": [
+                        "cosmosticketendpoint"
+                      ],
+                      "isEnabled": true,
+                      "name": "cosmosTelemetryRoute",
+                      "source": "DeviceMessages"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', 'cosmosAccountDeployment')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "logAnalyticsDeployment",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "workspaceName": {
+            "value": "[variables('laWorkspaceName')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.14.85.62628",
+              "templateHash": "7407329901618774531"
+            }
+          },
+          "parameters": {
+            "workspaceName": {
+              "type": "string",
+              "defaultValue": "iothubanalyticsworkspace"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.OperationalInsights/workspaces",
+              "apiVersion": "2022-10-01",
+              "name": "[parameters('workspaceName')]",
+              "location": "[resourceGroup().location]",
+              "identity": {
+                "type": "SystemAssigned"
+              }
+            }
+          ],
+          "outputs": {
+            "logAnalyticsWorkspaceId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "logAnalyticsWorkspaceId": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'logAnalyticsDeployment'), '2020-10-01').outputs.logAnalyticsWorkspaceId.value]"
+    }
+  }
+}
