@@ -1,11 +1,6 @@
-using Microsoft.AspNetCore.SignalR.Protocol;
 using Microsoft.Azure.Devices.Client;
-using Microsoft.Azure.Devices.Common;
 using Microsoft.Azure.Devices.Client.Transport.Mqtt;
-using System.Diagnostics.Metrics;
-using System.Runtime.Loader;
 using System.Text;
-using System.Security.Cryptography.Xml;
 
 namespace EdgeTicketSubmissionService
 
@@ -64,7 +59,7 @@ namespace EdgeTicketSubmissionService
         /// </summary>
         static async Task Init()
         {
-            MqttTransportSettings mqttSetting = new MqttTransportSettings(TransportType.Mqtt_Tcp_Only);
+            var mqttSetting = new MqttTransportSettings(TransportType.Mqtt_Tcp_Only);
             ITransportSettings[] settings = { mqttSetting };
 
             // Open a connection to the Edge runtime
@@ -82,6 +77,7 @@ namespace EdgeTicketSubmissionService
 
         private static Task<MethodResponse> DirectMethod1(MethodRequest methodRequest, object userContext)
         {
+            Console.WriteLine("Direct method called from the cloud");
 
             var methodResponse = new MethodResponse(Encoding.UTF8.GetBytes("{\"status\": \"ok\"}"), 200);
             return Task.FromResult(methodResponse);

@@ -10,10 +10,11 @@ namespace EdgeTicketSubmissionService.Controllers
     public class TicketSubmissionController : ControllerBase
     {
         // GET: api/<TicketSubmissionController>
+        // This is to verify that the controller is reachable from the edge device
         [HttpGet]
         public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
+        {            
+            return new string[] { "TicketSubmissionController", "ConnectivityVerified" };
         }
 
         // GET api/<TicketSubmissionController>/5
@@ -56,17 +57,6 @@ namespace EdgeTicketSubmissionService.Controllers
 
             await Program.IoTHubModuleClient.SendEventAsync("output1", message);            
         }
-
-        // PUT api/<TicketSubmissionController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<TicketSubmissionController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
+      
     }
 }

@@ -5,6 +5,12 @@ VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EdgeTicketSubmissionModule", "EdgeTicketSubmissionModule\EdgeTicketSubmissionModule.csproj", "{223052F0-E928-420F-9073-13D643939FD9}"
 EndProject
+Project("{34036844-64E7-43A5-9151-4AD90E180989}") = "TicketSyncServices", "SQLSyncModule\TicketSyncServices.iotedgeproj", "{717EA4D3-6198-485A-BDE5-D15BF52C93B3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SQLSyncModule", "SQLSyncModule2\SQLSyncModule.csproj", "{F34C9BD7-1925-45A1-9955-0229610810E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FakeTicketGenerator", "FakeTicketGenerator\FakeTicketGenerator.csproj", "{0600307C-8713-4C55-8CE0-2E3AFD376C8E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +21,18 @@ Global
 		{223052F0-E928-420F-9073-13D643939FD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{223052F0-E928-420F-9073-13D643939FD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{223052F0-E928-420F-9073-13D643939FD9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{717EA4D3-6198-485A-BDE5-D15BF52C93B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{717EA4D3-6198-485A-BDE5-D15BF52C93B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{717EA4D3-6198-485A-BDE5-D15BF52C93B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{717EA4D3-6198-485A-BDE5-D15BF52C93B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F34C9BD7-1925-45A1-9955-0229610810E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F34C9BD7-1925-45A1-9955-0229610810E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F34C9BD7-1925-45A1-9955-0229610810E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F34C9BD7-1925-45A1-9955-0229610810E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0600307C-8713-4C55-8CE0-2E3AFD376C8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0600307C-8713-4C55-8CE0-2E3AFD376C8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0600307C-8713-4C55-8CE0-2E3AFD376C8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0600307C-8713-4C55-8CE0-2E3AFD376C8E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
