@@ -1,8 +1,12 @@
-# IoT Edge Web API Sample Project
+# IoT Edge Sql Sync to Azure Sample Project
 
 ## Overview
 
-This sample project contains the Azure and Edge components necessary to host a Web API on the edge that accepts valid JSON and forwards it to IoT Hub in Azure. IoT Hub in turns sends the data to Cosmos Database. The components that run on the edge are hosted on a Windows device configured with EFLOW to host the IoT Edge runtime, and custom modules to host a web api for json submission, and a module for sending additional metrics to Log Anatlycs for observability. 
+This sample project demostrates syncing records from an Azure SQL Edge database with Azure Cosmos Db.  The Sql Edge database is hosted as a custom module in IoT Edge running in EFLOW (Azure IoT Edge fpor Linux on Windows).  In addition to the Sql Database running on the edge device, there is also a FakeDataGenerator custom module that continually populates that database with fake data, as well as the SqlSyncModule that reads records from the database and sends them to Azure via IoT Hub. Azure Iot Hub in turn pushes these records to Cosmos DB in near real time.  For this demo to be complete, Azure SQL Edge was used, but you can adapt this to read from your own local SQL Server by chaning the connection string in the code. 
+
+Additionally, a Microsoft provided [Metrics Collection Module](https://learn.microsoft.com/en-us/azure/iot-edge/how-to-collect-and-transport-metrics?view=iotedge-1.4&tabs=iothub#enable-in-restricted-network-access-scenarios) is included to scrape local metrics and upload to Azure Monitor. 
+
+** _**Note, for use with Azure Monitor, public network access must be allowed from the medge device to public endpoints for Azure Monitor.  Remove this module or change the Metrics Collection Module to send via IoT Hub if this is a problem.**_ 
 
 Clone this repo and follow the steps below to get the solution running in your own Azure subscription.
 
@@ -43,7 +47,34 @@ az deployment group create --resource-group <resource-group-name> --template-fil
 
 ## Build custom modules and push to a container registry
 
-1. Once [The EdgeTicketSubmissionModule](./EdgeTicketSubmissionModule/) is build and pushed to a container registry, follow these instructions on [How to deploy IoT Edge Modules](https://learn.microsoft.com/en-us/azure/iot-edge/how-to-deploy-modules-portal?view=iotedge-1.4).
+1. Use Visual Studio or Visual Studio Code to build [the FakeDataGeneratorModule](./FakeTicketGeneratorModule/) and [the SQLSyncModule](./SQLSyncModule2/) docker containers.
+
+2. Push docker containers for those modules to a container registry. [Azure Container Registry](https://learn.microsoft.com/en-us/azure/container-registry/) can be used for this.
+
+3. Deploy [SqlSyncDemo IoT Hub deployment manifest](./DeplymentManifests/SqlSyncDemo.json) using the Azure CLI.
+
+4. Seed Database
+
+```C#
+// submit the deployment manifest json file to IoT Hub, pusing device configuration down to the named device.
+// Device Id is the name of your edge device.  
+// Hub Name is the name of your Azure IoT Hub
+// Content is the path to the DeploymentManifests/SqlSyncDemo.json file
+az iot edge set-modules --device-id [device id] --hub-name [hub name] --content [file path]
+
+```
 
 
-## Test Web API hosted on IoT Edge device
+Additional detail on deploying modules to IoT Edge devices can be found at  [How to deploy IoT Edge Modules](https://learn.microsoft.com/en-us/azure/iot-edge/how-to-deploy-modules-portal?view=iotedge-1.4)
+
+// TODO: add port bindings in container create options for FakeDataGenerator
+
+// TODO: add db initialization script or bacpac to seed database
+
+## Test Sql Sync Demo hosted on IoT Edge device
+
+1. Connect to local Azure SQL Edge Database
+2. Query Azure Cosmos Database for new data
+
+
+

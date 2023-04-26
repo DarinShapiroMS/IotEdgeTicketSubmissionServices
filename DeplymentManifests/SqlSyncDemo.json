@@ -1,0 +1,130 @@
+{
+    "modulesContent": {
+        "$edgeAgent": {
+            "properties.desired": {
+                "schemaVersion": "1.1",
+                "runtime": {
+                    "type": "docker",
+                    "settings": {
+                        "registryCredentials": {
+                            "avasampleregistryebkkuonvyhsna": {
+                                "address": "<contaier registry url>",
+                                "password": "<container registry password>",
+                                "username": "<container registry username>"
+                            }
+                        }
+                    }
+                },
+                "systemModules": {
+                    "edgeAgent": {
+                        "settings": {
+                            "image": "mcr.microsoft.com/azureiotedge-agent:1.4"
+                        },
+                        "type": "docker"
+                    },
+                    "edgeHub": {
+                        "restartPolicy": "always",
+                        "settings": {
+                            "image": "mcr.microsoft.com/azureiotedge-hub:1.4",
+                            "createOptions": "{\"HostConfig\":{\"PortBindings\":{\"443/tcp\":[{\"HostPort\":\"443\"}],\"5671/tcp\":[{\"HostPort\":\"5671\"}],\"8883/tcp\":[{\"HostPort\":\"8883\"}]}}}"
+                        },
+                        "status": "running",
+                        "type": "docker"
+                    }
+                },
+                "modules": {
+                    "IoTEdgeMetricsCollector": {
+                        "env": {
+                            "ResourceId": {
+                                "value": "<Resource ID of the IoT hub that the device communicates with.>"
+                            },
+                            "UploadTarget": {
+                                "value": "<Controls whether metrics are sent directly to Azure Monitor over HTTPS or to IoT Hub as D2C messages.>"
+                            },
+                            "LogAnalyticsWorkspaceId": {
+                                "value": "<Required only if UploadTarget is AzureMonitor>"
+                            },
+                            "LogAnalyticsSharedKey": {
+                                "value": "<Required only if UploadTarget is AzureMonitor>"
+                            }
+                        },
+                        "restartPolicy": "always",
+                        "settings": {
+                            "image": "mcr.microsoft.com/azureiotedge-metrics-collector:1.1"
+                        },
+                        "status": "running",
+                        "type": "docker"
+                    },
+                    "AzureSQLEdge": {
+                        "env": {
+                            "ACCEPT_EULA": {
+                                "value": "Y"
+                            },
+                            "MSSQL_SA_PASSWORD": {
+                                "value": "<password>"
+                            },
+                            "MSSQL_LCID": {
+                                "value": "1033"
+                            },
+                            "MSSQL_COLLATION": {
+                                "value": "SQL_Latin1_General_CP1_CI_AS"
+                            }
+                        },
+                        "restartPolicy": "always",
+                        "settings": {
+                            "image": "mcr.microsoft.com/azure-sql-edge/developer",
+                            "createOptions": "{\"HostConfig\":{\"CapAdd\":[\"SYS_PTRACE\"],\"Binds\":[\"sqlvolume:/sqlvolume\"],\"PortBindings\":{\"1433/tcp\":[{\"HostPort\":\"1433\"}]},\"Mounts\":[{\"Type\":\"volume\",\"Source\":\"sqlvolume\",\"Target\":\"/var/opt/mssql\"}]},\"Env\":[\"MSSQL_AGENT_ENABLED=TRUE\",\"ClientTransportType=AMQP_TCP_Only\",\"PlanId=asde-developer-on-iot-edge\"]}"
+                        },
+                        "status": "running",
+                        "type": "docker"
+                    },
+                    "FakeTicketGenerator": {
+                        "restartPolicy": "always",
+                        "settings": {
+                            "image": "<image address of FakeTicketGenerator, e.g. youriothub.azurecr.io/faketicketgenerator:12743>",
+                            "createOptions": "{\"HostConfig\":{\"PortBindings\":{\"15959/tcp\":[{\"HostPort\":\"15959\"}]}}}"
+                        },
+                        "status": "running",
+                        "type": "docker"
+                    },
+                    "SqlSyncModule": {
+                        "restartPolicy": "always",
+                        "settings": {
+                            "image": "<image address of SqlSyncModule e.g. youriothub.azurecr.io/sqlsyncmodule:20230413175055>"
+                        },
+                        "status": "running",
+                        "type": "docker"
+                    }
+                }
+            }
+        },
+        "$edgeHub": {
+            "properties.desired": {
+                "schemaVersion": "1.1",
+                "storeAndForwardConfiguration": {
+                    "timeToLiveSecs": 7200
+                },
+                "routes": {
+                    "FromMetricsCollectorToUpstream": {
+                        "route": "FROM /messages/modules/IoTEdgeMetricsCollector/* INTO $upstream"
+                    },
+                    "All": {
+                        "route": "FROM /messages/* INTO $upstream"
+                    }
+                }
+            }
+        },
+        "IoTEdgeMetricsCollector": {
+            "properties.desired": {}
+        },
+        "AzureSQLEdge": {
+            "properties.desired": {}
+        },
+        "FakeTicketGenerator": {
+            "properties.desired": {}
+        },
+        "SqlSyncModule": {
+            "properties.desired": {}
+        }
+    }
+}
