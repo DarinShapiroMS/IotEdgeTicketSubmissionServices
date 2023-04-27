@@ -36,7 +36,27 @@
             "status": "running",
             "restartPolicy": "always",
             "settings": {
-              "image": "localhost:5000/sqlsyncmodule2:0.0.1-amd64.debug",
+              "image": "avasampleregistryebkkuonvyhsna.azurecr.io/sqlsyncmodule:0.0.1-amd64.debug",
+              "createOptions": "{}"
+            }
+          },
+          "FakeTicketGenerator": {
+            "version": "1.0.0",
+            "type": "docker",
+            "status": "running",
+            "restartPolicy": "always",
+            "settings": {
+              "image": "avasampleregistryebkkuonvyhsna.azurecr.io/faketicketgenerator:0.0.1-amd64.debug",
+              "createOptions": "{}"
+            }
+          },
+          "SQLSyncModule": {
+            "version": "1.0.0",
+            "type": "docker",
+            "status": "running",
+            "restartPolicy": "always",
+            "settings": {
+              "image": "avasampleregistryebkkuonvyhsna.azurecr.io/sqlsyncmodule:0.0.1-amd64.debug",
               "createOptions": "{}"
             }
           }
@@ -47,7 +67,9 @@
       "properties.desired": {
         "schemaVersion": "1.2",
         "routes": {
-          "SQLSyncModule2ToIoTHub": "FROM /messages/modules/SQLSyncModule2/outputs/* INTO $upstream"
+          "SQLSyncModule2ToIoTHub": "FROM /messages/modules/SQLSyncModule2/outputs/* INTO $upstream",
+          "FakeTicketGeneratorToIoTHub": "FROM /messages/modules/FakeTicketGenerator/outputs/* INTO $upstream",
+          "SQLSyncModuleToIoTHub": "FROM /messages/modules/SQLSyncModule/outputs/* INTO $upstream"
         },
         "storeAndForwardConfiguration": {
           "timeToLiveSecs": 7200

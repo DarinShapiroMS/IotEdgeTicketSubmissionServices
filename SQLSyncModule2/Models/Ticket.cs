@@ -24,8 +24,7 @@ namespace SQLSyncModule2.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Server=localhost;Persist Security Info=False;Database=Tickets;User ID=sa;Password=P@ssw0rd;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;");
-           
+            optionsBuilder.UseSqlServer("Server=AzureSQLEdge,1433;Persist Security Info=False;Database=Tickets;User ID=sa;Password=P@ssw0rd;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;");
         }
     }
 

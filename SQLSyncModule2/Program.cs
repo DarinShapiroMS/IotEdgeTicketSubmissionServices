@@ -33,7 +33,7 @@ namespace SQLSyncModule2
 
             // setup a timer to query the database for changes
             // defaulting to 60 second interval until a module twin update changes this
-            _syncTimer = new Timer(SyncDatabaseChanges, null, 0, 2000);
+            _syncTimer = new Timer(SyncDatabaseChanges, null, 0, 10000);
 
             // Wait until the app unloads or is cancelled
             var cts = new CancellationTokenSource();
@@ -59,33 +59,65 @@ namespace SQLSyncModule2
             var lastSynced = ticketContext.LastSynced.FirstOrDefault();
             if(lastSynced == null)
             {
-                // if no records have been synced, start with the oldest record
-                var tickets = ticketContext.Tickets.ToList();
-                foreach (var ticket in tickets)
+                // if no records have been synced, get all records
+                try
                 {
-                    var message = new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(ticket)));
-                    _ioTHubModuleClient.SendEventAsync("output1", message).Wait();
-                    Console.WriteLine($"just synced {message}");
-                    lastSynced = new LastSynced();
-                    lastSynced.LastSyncedDateTime = ticket.TransactionDate;
-                    ticketContext.LastSynced.Add(lastSynced);
-                    ticketContext.SaveChanges();
+                    var tickets = ticketContext.Tickets.ToList();
+                    var ticketCount = tickets.Count;
+                    foreach (var ticket in tickets)
+                    {
+                        using Message message = SendIoTHubMessage(ticket);
+                        
+                        lastSynced = new LastSynced();
+                        lastSynced.LastSyncedDateTime = ticket.TransactionDate;
+                        ticketContext.LastSynced.Add(lastSynced);
+                        ticketContext.SaveChanges();
+                    }
+
+                    Console.WriteLine($"Synced {ticketCount} records");
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Error writing to database when lastsynced == null \r\n{e.Message}");
                 }
             }
             else
             {
-                var tickets = ticketContext.Tickets.Where(t => t.TransactionDate > lastSynced.LastSyncedDateTime).ToList();
-                foreach (var ticket in tickets) {
-                    var message = new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(ticket)));
-                    _ioTHubModuleClient.SendEventAsync("output1", message).Wait();
-                    lastSynced.LastSyncedDateTime = ticket.TransactionDate;
-                    ticketContext.LastSynced.Update(lastSynced);
-                    ticketContext.SaveChanges();
+                try
+                {
+                    var tickets = ticketContext.Tickets.Where(t => t.TransactionDate > lastSynced.LastSyncedDateTime).ToList();
+                    var ticketCount = tickets.Count;
+                    foreach (var ticket in tickets)
+                    {
+                        using Message message = SendIoTHubMessage(ticket);
+
+                        lastSynced.LastSyncedDateTime = ticket.TransactionDate;
+                        //ticketContext.LastSynced.Update(lastSynced);
+                        ticketContext.SaveChanges();
+                    }
+                    Console.WriteLine($"synced {ticketCount} records");
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Error writing to database when lastsynced != null \r\n{e.Message}");
                 }
             }                      
         }
 
-       
+        private static Message SendIoTHubMessage(Ticket ticket)
+        {
+            var message = new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(ticket)))
+            {
+                ContentEncoding = Encoding.UTF8.ToString(),
+                ContentType = "application/json",
+
+            };
+
+            _ioTHubModuleClient.SendEventAsync("output1", message).Wait();
+            return message;
+        }
+
+
 
         /// <summary>
         /// Handles cleanup operations when app is cancelled or unloads

@@ -27,16 +27,19 @@ namespace FakeTicketGenerator
 
             // load fake json from file
             _fakeJson = File.ReadAllText("fake.json");
-
+            Console.WriteLine($"Using fake json payload of \r\n{_fakeJson}");
 
             // Start the timer for generating fake tickets
             timer2.Interval = 5000;
             timer2.Elapsed += (sender, e) => GenerateFakeTickets(sender);   
 
+            // start by default
+            timer2.Start();
+
             // host a wep api to toggle the fake ticket generation
             var app = WebApplication.Create(args);
             app.MapGet("/toggle", () => Toggle());
-            app.Run("http://localhost:15959");
+            app.Run("http://localhost:5000");
             
             // Wait until the app unloads or is cancelled
             var cts = new CancellationTokenSource();
@@ -70,21 +73,38 @@ namespace FakeTicketGenerator
         /// <param name="state"></param>
         private static void GenerateFakeTickets(object state)
         {                    
+            Console.WriteLine("Generating fake tickets");
+
             // Create random number of new tickets
             TicketContext ticketContext = new TicketContext();
-            var rand = new Random().Next(1, 20);
-            for (int i = 0; i < rand; i++)
+            var rand = new Random().Next(1, 5);
+
+            try
             {
-                // for now, just create a new ticket record
-                ticketContext.Tickets.Add(new Ticket
+                for (int i = 0; i < rand; i++)
                 {
-                    Id = Guid.NewGuid().ToString(),
-                    StoreId = 1,
-                    Json = _fakeJson,
-                    Status = "New"
-                });
-                ticketContext.SaveChangesAsync();
-            }            
+
+                    // for now, just create a new ticket record
+                    ticketContext.Tickets.Add(new Ticket
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        StoreId = 1,
+                        Json = _fakeJson,
+                        Status = "New"
+                    });
+
+                    ticketContext.SaveChanges();
+                    
+
+
+
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error saving to db: {ex.Message}");
+            }
+            Console.WriteLine($"{rand} records saved in db");
         }
 
         /// <summary>

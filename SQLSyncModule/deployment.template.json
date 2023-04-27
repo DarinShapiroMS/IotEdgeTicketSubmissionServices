@@ -73,6 +73,16 @@
               "image": "${MODULEDIR<../FakeTicketGenerator>}",
               "createOptions": {}
             }
+          },
+          "SQLSyncModule": {
+            "version": "1.0.0",
+            "type": "docker",
+            "status": "running",
+            "restartPolicy": "always",
+            "settings": {
+              "image": "${MODULEDIR<../SQLSyncModule2>}",
+              "createOptions": {}
+            }
           }
         }
       }
@@ -82,7 +92,8 @@
         "schemaVersion": "1.2",
         "routes": {
           "SQLSyncModule2ToIoTHub": "FROM /messages/modules/SQLSyncModule2/outputs/* INTO $upstream",
-          "FakeTicketGeneratorToIoTHub": "FROM /messages/modules/FakeTicketGenerator/outputs/* INTO $upstream"
+          "FakeTicketGeneratorToIoTHub": "FROM /messages/modules/FakeTicketGenerator/outputs/* INTO $upstream",
+          "SQLSyncModuleToIoTHub": "FROM /messages/modules/SQLSyncModule/outputs/* INTO $upstream"
         },
         "storeAndForwardConfiguration": {
           "timeToLiveSecs": 7200

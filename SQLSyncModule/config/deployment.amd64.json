@@ -1,5 +1,4 @@
 {
-  "$schema-template": "2.0.0",
   "modulesContent": {
     "$edgeAgent": {
       "properties.desired": {
@@ -16,8 +15,8 @@
           "edgeAgent": {
             "type": "docker",
             "settings": {
-              "image": "mcr.microsoft.com/azureiotedge-agent:1.2",
-              "createOptions": {}
+              "image": "mcr.microsoft.com/azureiotedge-agent:1.4",
+              "createOptions": "{}"
             }
           },
           "edgeHub": {
@@ -25,28 +24,8 @@
             "status": "running",
             "restartPolicy": "always",
             "settings": {
-              "image": "mcr.microsoft.com/azureiotedge-hub:1.2",
-              "createOptions": {
-                "HostConfig": {
-                  "PortBindings": {
-                    "5671/tcp": [
-                      {
-                        "HostPort": "5671"
-                      }
-                    ],
-                    "8883/tcp": [
-                      {
-                        "HostPort": "8883"
-                      }
-                    ],
-                    "443/tcp": [
-                      {
-                        "HostPort": "443"
-                      }
-                    ]
-                  }
-                }
-              }
+              "image": "mcr.microsoft.com/azureiotedge-hub:1.4",
+              "createOptions": "{\"HostConfig\":{\"PortBindings\":{\"5671/tcp\":[{\"HostPort\":\"5671\"}],\"8883/tcp\":[{\"HostPort\":\"8883\"}],\"443/tcp\":[{\"HostPort\":\"443\"}]}}}"
             }
           }
         },
@@ -57,8 +36,11 @@
             "status": "running",
             "restartPolicy": "always",
             "settings": {
-              "image": "${MODULEDIR<../SQLSyncModule2>.debug}",
-              "createOptions": {}
+              "image": "avasampleregistryebkkuonvyhsna.azurecr.io/sqlsyncmodule:0.0.1-amd64",
+              "createOptions": "{}",
+              "properties.desired": {
+                "SYNC_INTERVAL_SECONDS": "30"
+              }
             }
           },
           "FakeTicketGenerator": {
@@ -67,8 +49,8 @@
             "status": "running",
             "restartPolicy": "always",
             "settings": {
-              "image": "${MODULEDIR<../FakeTicketGenerator>.debug}",
-              "createOptions": {}
+              "image": "avasampleregistryebkkuonvyhsna.azurecr.io/faketicketgenerator:0.0.1-amd64",
+              "createOptions": "{}"
             }
           },
           "SQLSyncModule": {
@@ -77,8 +59,8 @@
             "status": "running",
             "restartPolicy": "always",
             "settings": {
-              "image": "${MODULEDIR<../SQLSyncModule2>.debug}",
-              "createOptions": {}
+              "image": "avasampleregistryebkkuonvyhsna.azurecr.io/sqlsyncmodule:0.0.1-amd64",
+              "createOptions": "{}"
             }
           }
         }
