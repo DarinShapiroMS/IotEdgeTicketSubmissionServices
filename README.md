@@ -25,19 +25,19 @@ The Edge components that run outside of Azure include..
 2. [EFLOW](https://learn.microsoft.com/en-us/azure/iot-edge/iot-edge-for-linux-on-windows?view=iotedge-1.4) (Azure IoT Edge for Linux on Windows).
 3. Custom C# modules to host a local web API and collect metrics for observability.
 ### To Deploy Azure Infrasructure
-After cloning this repo locally, navigate to the [BicepDeployment Directory](..BicepDeployment/) and execute the following commands.  
-```C#	
-// You must first authenticate with Azure.
+After cloning this repo locally, navigate to the [BicepDeployment Directory](..BicepDeployment/) and execute the following commands in an elevated PowerShell terminal (Azure CLI required).   
+```PowerShell	
+-- You must first authenticate with Azure.
 az login
 
-// use az account set if you need to set the active subscription
+-- use az account set if you need to set the active subscription
 az account set -s <subscription id here>
 
-// Create a resource group for all Azure resources related to this project
-// use az account list-locations for list of Azure regions
+-- Create a resource group for all Azure resources related to this project
+-- use az account list-locations for list of Azure regions
 az group create -n <new resource group name> -l <desired Azure region>
 
-// deploy main.bicep file to the resource group you just created
+-- deploy main.bicep file to the resource group you just created
 az deployment group create --resource-group <resource-group-name> --template-file main.bicep
 ```
 
@@ -53,28 +53,41 @@ az deployment group create --resource-group <resource-group-name> --template-fil
 
 3. Deploy [SqlSyncDemo IoT Hub deployment manifest](./DeplymentManifests/SqlSyncDemo.json) using the Azure CLI.
 
-4. Seed Database
 
-```C#
-// submit the deployment manifest json file to IoT Hub, pusing device configuration down to the named device.
-// Device Id is the name of your edge device.  
-// Hub Name is the name of your Azure IoT Hub
-// Content is the path to the DeploymentManifests/SqlSyncDemo.json file
+
+```PowerShell
+-- submit the deployment manifest json file to IoT Hub, pusing device configuration down to the named device.
+-- Device Id is the name of your edge device.  
+-- Hub Name is the name of your Azure IoT Hub
+-- Content is the path to the DeploymentManifests/SqlSyncDemo.json file
 az iot edge set-modules --device-id [device id] --hub-name [hub name] --content [file path]
 
 ```
-
-
 Additional detail on deploying modules to IoT Edge devices can be found at  [How to deploy IoT Edge Modules](https://learn.microsoft.com/en-us/azure/iot-edge/how-to-deploy-modules-portal?view=iotedge-1.4)
 
 
+** Note - The database will be seeded with necessary schema, but this requires it to pull a file from Azure Storage at startup. Network access to Azure Storage is required.  If this isn't possible, the bacpac file must be manually imported into the database.  See [this page](https://learn.microsoft.com/en-us/azure/azure-sql-edge/deploy-dacpac) for info on bootstrapping Azure SQL with a dacpac or bacpac. 
 
 
 
-## Test Sql Sync Demo hosted on IoT Edge device
+
+## Verify data is flowing from edge to cloud
 
 1. Connect to local Azure SQL Edge Database
+
+    First get the IP address of the EFLOW VM. Run this command in an elevated PowerShell instance. 
+
+```PowerShell
+    Get-EflowVmAddr
+```
+
+Then use any SQL tool to connect to the Tickets database on the Azure SQL Edge server running within EFLOW.  See [this article for more info](https://learn.microsoft.com/en-us/azure/azure-sql-edge/connect).  You should see fake data being generated and inserted into Tickets table.
+
+
+
+
 2. Query Azure Cosmos Database for new data
+After records are inserted into local Sql Edge database, they are sent through to IoT Hub, and then ingested into CosmosDB.  You can query the CosmosDb Tickets collection to see the fake tickets. 
 
 
 
