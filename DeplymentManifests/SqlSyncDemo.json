@@ -79,6 +79,7 @@
                             "image": "mcr.microsoft.com/azure-sql-edge/developer",
                             "createOptions": "{\"HostConfig\":{\"CapAdd\":[\"SYS_PTRACE\"],\"Binds\":[\"sqlvolume:/sqlvolume\"],\"PortBindings\":{\"1433/tcp\":[{\"HostPort\":\"1433\"}]},\"Mounts\":[{\"Type\":\"volume\",\"Source\":\"sqlvolume\",\"Target\":\"/var/opt/mssql\"}]},\"Env\":[\"MSSQL_AGENT_ENABLED=TRUE\",\"ClientTransportType=AMQP_TCP_Only\",\"PlanId=asde-developer-on-iot-edge\"]}"
                         },
+                        "startupOrder": "1",
                         "status": "running",
                         "type": "docker"
                     },
@@ -88,14 +89,17 @@
                             "image": "<image address of FakeTicketGenerator, e.g. youriothub.azurecr.io/faketicketgenerator:12743>",
                             "createOptions": "{\"HostConfig\":{\"PortBindings\":{\"15959/tcp\":[{\"HostPort\":\"15959\"}]}}}"
                         },
+                        "startupOrder": "2",
                         "status": "running",
                         "type": "docker"
+                        
                     },
                     "SqlSyncModule": {
                         "restartPolicy": "always",
                         "settings": {
                             "image": "<image address of SqlSyncModule e.g. youriothub.azurecr.io/sqlsyncmodule:20230413175055>"
                         },
+                        "startupOrder": "3",
                         "status": "running",
                         "type": "docker"
                     }

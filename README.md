@@ -67,9 +67,9 @@ az iot edge set-modules --device-id [device id] --hub-name [hub name] --content 
 
 Additional detail on deploying modules to IoT Edge devices can be found at  [How to deploy IoT Edge Modules](https://learn.microsoft.com/en-us/azure/iot-edge/how-to-deploy-modules-portal?view=iotedge-1.4)
 
-// TODO: add port bindings in container create options for FakeDataGenerator
 
-// TODO: add db initialization script or bacpac to seed database
+
+
 
 ## Test Sql Sync Demo hosted on IoT Edge device
 
