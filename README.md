@@ -6,9 +6,9 @@ This sample project demostrates syncing records from an Azure SQL Edge database 
 
 Additionally, a Microsoft provided [Metrics Collection Module](https://learn.microsoft.com/en-us/azure/iot-edge/how-to-collect-and-transport-metrics?view=iotedge-1.4&tabs=iothub#enable-in-restricted-network-access-scenarios) is included to scrape local metrics and upload to Azure Monitor. 
 
-** _**Note, for use with Azure Monitor, public network access must be allowed from the medge device to public endpoints for Azure Monitor.  Remove this module or change the Metrics Collection Module to send via IoT Hub if this is a problem.**_ 
+** _**Note, for use with Azure Monitor, public network access must be allowed from the edge device to public endpoints for Azure Monitor.  Remove this module or change the Metrics Collection Module to send via IoT Hub if this is a problem.**_ 
 
-Clone this repo and follow the steps below to get the solution running in your own Azure subscription.
+## Clone this repo and follow the steps below to get the solution running in your own Azure subscription.
 
 ## Deploy Azure Infrastructure
 
@@ -16,6 +16,7 @@ Using a bicep file and the Azure CLI, you can deploy the Azure services as visua
 1. [Azure IoT Hub](https://azure.microsoft.com/en-us/products/iot-hub/)
 2. [Azure Cosmos Database](https://azure.microsoft.com/en-us/products/cosmos-db/)
 3. [Azure Log Analytics Workspace - part of Azure Monitor](https://azure.microsoft.com/en-us/products/monitor/)
+4. An Azure Storage account
 
 
 ![Azure Infra Overview](./Docs/azure-architecture.png)
@@ -23,7 +24,7 @@ Using a bicep file and the Azure CLI, you can deploy the Azure services as visua
 The Edge components that run outside of Azure include..
 1. A Windows Server or Client.
 2. [EFLOW](https://learn.microsoft.com/en-us/azure/iot-edge/iot-edge-for-linux-on-windows?view=iotedge-1.4) (Azure IoT Edge for Linux on Windows).
-3. Custom C# modules to host a local web API and collect metrics for observability.
+3. Custom C# modules to host a Sql Edge db, a fake data generator, and a Sync module.
 ### To Deploy Azure Infrasructure
 After cloning this repo locally, navigate to the [BicepDeployment Directory](..BicepDeployment/) and execute the following commands in an elevated PowerShell terminal (Azure CLI required).   
 ```PowerShell	
